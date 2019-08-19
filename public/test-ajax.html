@@ -1,0 +1,178 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Quicksand" />
+        <link rel="stylesheet" type="text/css" href="creojsweb/libs/css/pretty-json.css" />
+        
+        <script type="text/javascript" src="creojsweb/libs/jquery-3.3.1.min.js" ></script>
+        <script type="text/javascript" src="creojsweb/libs/underscore-min.js" ></script>
+        <script type="text/javascript" src="creojsweb/libs/backbone-min.js" ></script>
+        <script type="text/javascript" src="creojsweb/libs/pretty-json-min.js" ></script>
+        
+        
+        <link rel="stylesheet" href="creojsweb/creo.ui.min.css">
+            
+        <script src="creojsweb/creojs.js"></script>
+        <script src="creojsweb/queries.js" type="text/creojs"></script>
+        <script src="creojsweb/browser.creojs" type="text/creojs"></script>
+        <script>
+            function callService (func, arg0) {
+                var args = (arguments.length > 1) ? Array.prototype.slice.call(arguments, 1) : []
+                return $.ajax({
+                    url: document.location.origin + "/api?func=" + func + "&args=" + JSON.stringify (args),
+                    beforeSend: function( xhr ) {
+                        xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+                    },
+                    dataType: "json",
+                    cache: false
+                })
+            }
+            function callServer (func, arg0) {
+                callService.apply (null, [func].concat (Array.prototype.slice.call(arguments, 1))).done(function( data ) {
+                    //alert( "Response:" + JSON.stringify (data))
+                    showJson (data).expandAll ()
+                });
+            }
+            function executeQuery (query) {
+                callService ('executeQuery', query).done (function (response) {
+                    showJson ({query: query, response: response}).expandAll ()
+                })
+            }
+            function testCallServer () {
+                var args = [document.getElementById ("query_func").value]
+                callServer.apply (null, args.concat (JSON.parse ('[' + document.getElementById ("query_args").value + ']')))
+            }
+            function testQuery () {
+                var query = [document.getElementById ("query").value]
+                CreoJS.executeQuery (query)
+            }
+            var showJsonElement = 'output'
+            function showJson (obj) {
+                var span = document.getElementById(showJsonElement);
+                return new PrettyJSON.view.Node({ 
+                        el:span, 
+                        data:obj
+                    });
+            }
+
+            var lineStack = [];
+            var lineCurrent = -1;
+
+            function queryInput () {return document.getElementById ("query")}
+
+            function lineStackUp() {
+                if (lineCurrent < lineStack.length-1) {
+                    queryInput ().value = lineStack [++lineCurrent]
+                }
+            }
+
+            function lineStackDown() {
+                if (lineCurrent > 0) {
+                    queryInput ().value = lineStack [--lineCurrent]
+                }
+            }
+
+            function selectScriptLine () {
+                queryInput ().setSelectionRange(0, queryInput ().value.length)
+            }
+
+            function scriptLineKeyEvent(event) {
+                //alert ("pushed " + event.keyCode)
+                switch (event.keyCode) {
+                    /* F1    */ case 112: event.preventDefault(); executeQueryLine('?'); break;
+                    /* Enter */ case 13: event.preventDefault(); executeQueryLine(); break;
+                    /* Up    */ case 38: event.preventDefault(); lineStackDown(); break;
+                    /* Down  */ case 40: event.preventDefault(); lineStackUp(); break;
+                }
+            }
+
+            function executeQueryLine(script) {
+                script = script || queryInput ().value
+                if (script) {
+                    script = script.trim()
+                    if (script === '?') {
+                        var lines = []
+                        for (var idx=0; idx < lineStack.length; idx++) {
+                            lines.push ('' + idx + ': ' + lineStack [idx])
+                        }
+                        showJson (lines).expandAll ()
+                    }
+                    else {
+                        var index = parseInt (script)
+                        if (index >=0 && index < lineStack.length) {
+                            queryInput ().value = lineStack [index]
+                            executeQueryLine()
+                            return
+                        }
+                        document.getElementById("query_btn").click()
+                        if ((lineCurrent > -1) && (lineCurrent < lineStack.length) && (script === lineStack [lineCurrent])) {
+                        lineCurrent++
+                        }
+                        else {
+                        lineStack.push (script);
+                        if (lineStack.length > 50) {
+                            lineStack.splice (0, lineStack.length - 50)
+                        }
+                        lineCurrent = lineStack.length
+                        }
+                    }
+                }
+                queryInput ().focus()
+            }
+
+            function setButtonForEnter (inputId, buttonId) {
+                document.getElementById (inputId).addEventListener("keyup", function(event) {
+                    // Number 13 is the "Enter" key on the keyboard
+                    if (event.keyCode === 13) {
+                        // Cancel the default action, if needed
+                        event.preventDefault()
+                        // Trigger the button element with a click
+                        document.getElementById(buttonId).click()
+                    }
+                })
+            }
+
+        </script>
+
+        <script type="text/creojs" id="tests.js" type="text/creojs">
+
+            function reportCreoVersion () {
+                const session = pfcGetCurrentSession ()
+                return `Initialized Creo.JS: numeric version ${session.GetReleaseNumericVersion()}`
+            }
+
+            function callServer () {
+                Browser.callServer('getSum', 1, 2, 3)
+            }
+
+            function executeQuery (query) {
+                Browser.executeQuery(eval (`RemoteQuery.${query}`))
+            }
+
+        </script>
+        <script>
+            //CreoJS.$ADD_ON_LOAD (function () {CreoJS.reportCreoVersion ().onError (alert).subscribe(alert)})
+        </script>
+    </head>
+    <body>
+        <h2>Test Node.JS</h2>
+        <h3>Test Remote call</h3>
+        Function name: <input id="query_func" type="text" value="getEnv">
+        Args: <input id="query_args" type="text" value="">
+        <button id="ajax_btn" onclick="testCallServer ()">Call Server directy</button>
+        <!--
+            <button onclick="CreoJS.callServer ()">Call Ajax through Creo.JS!</button>
+        -->
+        <h3>Test Query</h3>
+        Query: <input style="width:500px" id="query" type="text"  value="clientSessions" onFocus="selectScriptLine()" onKeyUp="scriptLineKeyEvent(event)">
+        <button id="query_btn" onclick="testQuery ()">Execute</button>
+        <!--
+           <button onclick="alert (document.location.origin)">Check page!</button>
+        -->
+        <span id="output"></span>
+        <script>
+            //setButtonForEnter ("query", "query_btn")
+            setButtonForEnter ("query_func", "ajax_btn")
+            setButtonForEnter ("query_args", "ajax_btn")
+        </script>
+   </body>
+</html>

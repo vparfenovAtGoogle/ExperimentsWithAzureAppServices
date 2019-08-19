@@ -1,0 +1,12 @@
+<h2>{{title}}</h2>
+<!-- p>User: {{user}}</p-->
+<h3>People ({{people.length}})</h3>
+<table class="table table-hover table-condensed table-bordered table-sm">
+  <thead class="thead-dark"><th class="w-30">First Name</th><th class="w-60">Last Name</th><th class="w-10"></th></thead>
+  {{#each people}}
+  <tr class="table-{{state}}">
+    <td>{{firstName}}</td><td>{{lastName}}</td>
+    <td><button class="btn btn-outline-dark btn-sm" onclick="alert ('{{firstName}} {{lastName}}')">Open</button></td>
+  </tr>
+  {{/each}}
+</table>

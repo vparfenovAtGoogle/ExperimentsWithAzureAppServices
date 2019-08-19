@@ -1,0 +1,8 @@
+<li class="nav-item"><a href="/auth/debug">Anonymous</a></li>
+{{#each idps}}
+<li class="nav-item"><a href="/.auth/login/{{type}}?post_login_redirect_url=/auth/debug">Log in with {{name}}
+{{#if todo}}
+(TODO)
+{{/if}}
+</a></li>
+{{/each}}
