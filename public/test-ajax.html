@@ -1,19 +1,14 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Quicksand" />
-        <link rel="stylesheet" type="text/css" href="creojsweb/libs/css/pretty-json.css" />
+        <link rel="stylesheet" type="text/css" href="libs/css/pretty-json.css" />
         
-        <script type="text/javascript" src="creojsweb/libs/jquery-3.3.1.min.js" ></script>
-        <script type="text/javascript" src="creojsweb/libs/underscore-min.js" ></script>
-        <script type="text/javascript" src="creojsweb/libs/backbone-min.js" ></script>
-        <script type="text/javascript" src="creojsweb/libs/pretty-json-min.js" ></script>
+        <script type="text/javascript" src="libs/jquery-3.3.1.min.js" ></script>
+        <script type="text/javascript" src="libs/underscore-min.js" ></script>
+        <script type="text/javascript" src="libs/backbone-min.js" ></script>
+        <script type="text/javascript" src="libs/pretty-json-min.js" ></script>
         
         
-        <link rel="stylesheet" href="creojsweb/creo.ui.min.css">
-            
-        <script src="creojsweb/creojs.js"></script>
-        <script src="creojsweb/queries.js" type="text/creojs"></script>
-        <script src="creojsweb/browser.creojs" type="text/creojs"></script>
         <script>
             function callService (func, arg0) {
                 var args = (arguments.length > 1) ? Array.prototype.slice.call(arguments, 1) : []
@@ -133,22 +128,6 @@
 
         </script>
 
-        <script type="text/creojs" id="tests.js" type="text/creojs">
-
-            function reportCreoVersion () {
-                const session = pfcGetCurrentSession ()
-                return `Initialized Creo.JS: numeric version ${session.GetReleaseNumericVersion()}`
-            }
-
-            function callServer () {
-                Browser.callServer('getSum', 1, 2, 3)
-            }
-
-            function executeQuery (query) {
-                Browser.executeQuery(eval (`RemoteQuery.${query}`))
-            }
-
-        </script>
         <script>
             //CreoJS.$ADD_ON_LOAD (function () {CreoJS.reportCreoVersion ().onError (alert).subscribe(alert)})
         </script>
@@ -159,15 +138,6 @@
         Function name: <input id="query_func" type="text" value="getEnv">
         Args: <input id="query_args" type="text" value="">
         <button id="ajax_btn" onclick="testCallServer ()">Call Server directy</button>
-        <!--
-            <button onclick="CreoJS.callServer ()">Call Ajax through Creo.JS!</button>
-        -->
-        <h3>Test Query</h3>
-        Query: <input style="width:500px" id="query" type="text"  value="clientSessions" onFocus="selectScriptLine()" onKeyUp="scriptLineKeyEvent(event)">
-        <button id="query_btn" onclick="testQuery ()">Execute</button>
-        <!--
-           <button onclick="alert (document.location.origin)">Check page!</button>
-        -->
         <span id="output"></span>
         <script>
             //setButtonForEnter ("query", "query_btn")
