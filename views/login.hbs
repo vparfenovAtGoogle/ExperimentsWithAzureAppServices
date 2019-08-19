@@ -1,8 +1,13 @@
-<li class="nav-item"><a href="/auth/debug">Anonymous</a></li>
-{{#each idps}}
-<li class="nav-item"><a href="/.auth/login/{{type}}?post_login_redirect_url=/auth/debug">Log in with {{name}}
-{{#if todo}}
-(TODO)
-{{/if}}
-</a></li>
-{{/each}}
+<table class="table table-striped">
+  <thead><th>Login type</th><th>Azure documentation</th></thead>
+  <tr><td><a href="/auth/debug">Anonymous</a></td><td><a href="https://docs.microsoft.com/en-us/azure/app-service/overview-authentication-authorization">How to configure authentication</a></td></tr>
+  {{#each idps}}
+    <tr><td><a href="/.auth/login/{{type}}?post_login_redirect_url=/auth/debug">Log in with {{name}}
+      {{#if todo}}
+      (TODO)
+      {{/if}}
+    </a></td><td>
+      <a href="https://docs.microsoft.com/en-us/azure/app-service/configure-authentication-provider-{{help}}">How to configure login with {{name}}</a>
+    </td></tr>
+  {{/each}}
+</table>

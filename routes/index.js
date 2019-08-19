@@ -23,11 +23,11 @@ const renderLoginPage = function(req, res, next) {
     layout: 'loginlayout',
     title: "Login with one of the following Identity Providers",
     idps: [
-      {type: 'aad', name: 'Azure AD'},
-      {type: 'microsoftaccount', name: 'Microsoft Account'},
-      {type: 'facebook', name: 'Facebook', todo: true},
-      {type: 'google', name: 'Google'},
-      {type: 'twitter', name: 'Twitter', todo: true}
+      {type: 'aad', name: 'Azure AD', help: 'aad'},
+      {type: 'microsoftaccount', name: 'Microsoft Account', help: 'microsoft'},
+      {type: 'facebook', name: 'Facebook', todo: true, help: 'facebook'},
+      {type: 'google', name: 'Google', help: 'google'},
+      {type: 'twitter', name: 'Twitter', todo: true, help: 'twitter'}
     ]
   })
 }
