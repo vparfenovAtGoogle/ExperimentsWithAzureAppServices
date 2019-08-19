@@ -37,11 +37,13 @@ router.get('/debug', (req, res) => {
   headers = Object.keys (headers).map (key => {
     return {key, value: headers [key]}
   })
+  const envvars = process.env
   res.render('debug',
     {
       title: 'Test Node.JS with AAD Authentication environment',
       headers,
-      claims
+      claims,
+      envvars: Object.keys (envvars).map (name => {return {name, value: envvars [name]}})
     })
 })
 router.get('/logout', (req, res) => {

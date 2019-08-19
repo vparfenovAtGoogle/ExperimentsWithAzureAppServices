@@ -18,3 +18,12 @@
   </tr>
   {{/each}}
 </table>
+<h5>Environment Variables ({{envvars.length}})</h5>
+<table class="table table-hover table-condensed table-bordered table-sm">
+  <thead class="thead-dark"><th class="w-20">Name</th><th class="w-80">Value</th></thead>
+  {{#each envvars}}
+  <tr>
+    <td style="white-space: nowrap">{{name}}</td><td>{{value}}</td>
+  </tr>
+  {{/each}}
+</table>
