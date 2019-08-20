@@ -11,8 +11,7 @@ var vaultUri = "https://gdcappskeyvault.vault.azure.net/"
 
 function getKeyVaultSecret (name) {
   if (keyVaultClient) {
-    return {name}
-    return keyVaultClient.getSecret(vaultUri, name, "")
+   return keyVaultClient.getSecret(vaultUri, name, "")
   }
   return msRestAzure.loginWithAppServiceMSI({resource: 'https://vault.azure.net'})
     .then (credentials => {
