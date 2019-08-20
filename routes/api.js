@@ -3,7 +3,17 @@ const express = require('express');
 module.exports = function (applicationObj) {
   const router = express.Router()
   const handler = function(req, res, next) {
-    function sendException (ex) { res.json({exception: `${ex}`}) }
+    //function sendException (ex) {  }
+    function sendException (ex) {
+      if (ex instanceof Error) {
+        const stack = ex.stack.split ('\n')
+        const msg = stack.shift()
+        res.json({exception: {msg, stack}})
+      }
+      else {
+        res.json({exception: `${ex}`})
+      }
+    }
     function sendResult (result) {
         if (result instanceof Promise) {
         result
