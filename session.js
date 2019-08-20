@@ -9,15 +9,19 @@ const queryProcessor = require ('./queryprocessor')
 let keyVaultClient = null
 var vaultUri = "https://gdcappskeyvault.vault.azure.net/"
 
+function getKeyValutCredentials () {
+  return msRestAzure.loginWithAppServiceMSI({resource: 'https://vault.azure.net'})
+}
+
+function getKeyVaultClient () {
+  return getKeyValutCredentials ().then (credentials => new KeyVault.KeyVaultClient(credentials))
+}
+
 function getKeyVaultSecret (name) {
   if (keyVaultClient) {
    return keyVaultClient.getSecret(vaultUri, name, "")
   }
-  return msRestAzure.loginWithAppServiceMSI({resource: 'https://vault.azure.net'})
-    .then (credentials => {
-      keyVaultClient = new KeyVault.KeyVaultClient(credentials)
-      return getKeyVaultSecret (name)
-    })
+  return getKeyVaultClient ().then (client => keyVaultClient = client).then (client => getKeyVaultSecret (name))
 }
 
 function pushToArray (obj, arr) {arr.push (obj); return obj}
@@ -141,6 +145,8 @@ class SessionDB {
       }, delay);
     }).then (r=>r)
   }
+  getCredentials () {return getKeyValutCredentials ()} 
+  getKeyVault () {return getKeyVaultClient ()} 
   getSecret (name) {
     return getKeyVaultSecret (name)
   }
