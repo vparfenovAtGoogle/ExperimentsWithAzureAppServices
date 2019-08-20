@@ -15,8 +15,7 @@ function getKeyVaultSecret (name) {
   }
   return msRestAzure.loginWithAppServiceMSI({resource: 'https://vault.azure.net'})
     .then (credentials => {
-      return credentials
-      keyVaultClient = new KeyVault.KeyVaultClient(credentials)
+      return keyVaultClient = new KeyVault.KeyVaultClient(credentials)
       return getKeyVaultSecret (name)
     })
 }
