@@ -48,6 +48,9 @@
                         data:obj
                     });
             }
+            function clearOutput () {
+                document.getElementById(showJsonElement).innerHTML = ""
+            }
 
             var lineStack = [];
             var lineCurrent = -1;
@@ -138,6 +141,7 @@
         Function name: <input id="query_func" type="text" value="getEnv">
         Args: <input id="query_args" type="text" value="">
         <button id="ajax_btn" onclick="testCallServer ()">Call Server directy</button>
+        <button onclick="clearOutput ()">Clear</button>
         <div>
             <span id="output"></span>
         </div>

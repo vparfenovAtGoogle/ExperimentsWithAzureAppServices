@@ -1,7 +1,7 @@
 const os = require ('os')
 const uuidv1 = require ('uuid/v1')
 
-const keyVault = require('azure-keyvault');
+const KeyVault = require('azure-keyvault');
 const msRestAzure = require('ms-rest-azure');
 
 const queryProcessor = require ('./queryprocessor')
