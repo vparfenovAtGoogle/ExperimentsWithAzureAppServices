@@ -6,7 +6,6 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "@azure/keyvault-secrets": "^4.0.0-preview.4",
     "azure-keyvault": "^3.0.4",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
