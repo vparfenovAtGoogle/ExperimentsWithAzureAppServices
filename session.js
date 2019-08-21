@@ -1,13 +1,14 @@
 const os = require ('os')
 const uuidv1 = require ('uuid/v1')
 
-const KeyVault = require('azure-keyvault');
+//const KeyVault = require('azure-keyvault');
+const KeyVault = require('@azure/keyvault-secrets');
 const msRestAzure = require('ms-rest-azure');
 
 const queryProcessor = require ('./queryprocessor')
 
 let keyVaultClient = null
-var vaultUri = "https://gdcappskeyvault.vault.azure.net/"
+const vaultUri = `https://${process.env.KEY_VAULT_NAME}.vault.azure.net/`
 
 function getKeyValutCredentials () {
   return msRestAzure.loginWithAppServiceMSI({resource: 'https://vault.azure.net'})
@@ -144,6 +145,9 @@ class SessionDB {
         resolve({bar:'foo', PI: Math.PI, start, stop: new Date(), args});
       }, delay);
     }).then (r=>r)
+  }
+  getMSITokenCredentials () {
+    return `${KeyVault.MSITokenCredentials}`
   }
   getCredentials () {return getKeyValutCredentials ()} 
   getKeyVault () {return getKeyVaultClient ()} 
