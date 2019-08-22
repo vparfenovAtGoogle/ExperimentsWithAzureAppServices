@@ -15,7 +15,7 @@ module.exports = function (applicationObj) {
       }
     }
     function sendResult (result) {
-        if (result instanceof Promise) {
+      if (result instanceof Promise) {
         result
           .then (result => sendResult(result))
           .catch (ex => sendException (ex))

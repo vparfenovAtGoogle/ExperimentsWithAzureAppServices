@@ -10,7 +10,7 @@ const queryProcessor = require ('./queryprocessor')
 let keyVaultClient = null
 const vaultUri = `https://${process.env.KEY_VAULT_NAME}.vault.azure.net/`
 
-function getKeyValutCredentials () {
+function getKeyVaultCredentials () {
   return msRestAzure.loginWithAppServiceMSI({resource: 'https://vault.azure.net'})
 }
 
@@ -27,12 +27,12 @@ function getKeyVaultToken () {
 
     return callback(null, keyValutAuthorizationValue);
   }
-  return getKeyValutCredentials ()
+  return getKeyVaultCredentials ()
     .then (credentials => {credentials.getToken (_formAuthorizationValue); return keyValutAuthorizationValue})
 }
 
 function getKeyVaultClient () {
-  return getKeyValutCredentials ().then (credentials => new KeyVault.KeyVaultClient(credentials))
+  return getKeyVaultCredentials ().then (credentials => new KeyVault.KeyVaultClient(credentials))
 }
 
 function getKeyVaultSecret (name) {
@@ -168,8 +168,9 @@ class SessionDB {
   }
   getKeyVaultModels () {return Object.keys (KeyVault.Models).map (name => `${name}: ${typeof KeyVault.Models [name]}`)} 
   getKeyVaultExports () {return Object.keys (KeyVault).map (name => `${name}: ${typeof KeyVault [name]}`)} 
-  getCredentials () {
-    return getKeyValutCredentials ()
+  getCredentials () {return getKeyVaultCredentials ()} 
+  getCredentialsInfo () {
+    return getKeyVaultCredentials ()
       .then (credentials => {
         return {credentials, features: Object.keys (credentials).map (name => `${name}: ${typeof credentials [name]}`)}
       })
