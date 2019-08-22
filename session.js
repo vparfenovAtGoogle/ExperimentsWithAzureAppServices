@@ -14,21 +14,18 @@ function getKeyVaultCredentials () {
   return msRestAzure.loginWithAppServiceMSI({resource: 'https://vault.azure.net'})
 }
 
-var keyValutAuthorizationValue = {error: "not initialized"}
-
 function getKeyVaultToken () {
-  function _formAuthorizationValue(err, tokenResponse) {
-    if (err) {
-      keyValutAuthorizationValue = {error: `{err}`}
-      return callback(err);
+  return new Promise ((resolve, reject) => {
+    function callback(err, tokenResponse) {
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve ({tokenResponse, authorization: tokenResponse.tokenType + ' ' + tokenResponse.accessToken})
+      }
     }
-    // Calculate the value to be set in the request's Authorization header and resume the call.
-    keyValutAuthorizationValue = tokenResponse.tokenType + ' ' + tokenResponse.accessToken;
-
-    return callback(null, keyValutAuthorizationValue);
-  }
-  return getKeyVaultCredentials ()
-    .then (credentials => {credentials.getToken (_formAuthorizationValue); return keyValutAuthorizationValue})
+    getKeyVaultCredentials ().then (credentials => credentials.getToken (callback))
+  })
 }
 
 function getKeyVaultClient () {
