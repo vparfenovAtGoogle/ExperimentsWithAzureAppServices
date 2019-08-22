@@ -149,6 +149,7 @@ class SessionDB {
   getMSITokenCredentials () {
     return `${KeyVault.MSITokenCredentials}`
   }
+  getKeyVaultModels () {return Object.keys (KeyVault.Models).map (name => `${name}: ${typeof KeyVault.Models [name]}`)} 
   getKeyVaultExports () {return Object.keys (KeyVault).map (name => `${name}: ${typeof KeyVault [name]}`)} 
   getCredentials () {return getKeyValutCredentials ()} 
   getKeyVault () {return getKeyVaultClient ()} 
