@@ -168,7 +168,7 @@ class SessionDB {
   }
   getKeyVaultModels () {return Object.keys (KeyVault.Models).map (name => `${name}: ${typeof KeyVault.Models [name]}`)} 
   getKeyVaultExports () {return Object.keys (KeyVault).map (name => `${name}: ${typeof KeyVault [name]}`)} 
-  getCredentials () {return getKeyValutCredentials ()} 
+  getCredentials () {const credentials = getKeyValutCredentials (); return {credentials, features: Object.keys (credentials).map (name => `${name}: ${typeof credentials [name]}`)}} 
   getKeyVaultToken () {return getKeyVaultToken ()}
   getKeyVault () {return getKeyVaultClient ()} 
   getSecret (name) {
