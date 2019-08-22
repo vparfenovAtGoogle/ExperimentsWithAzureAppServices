@@ -149,6 +149,7 @@ class SessionDB {
   getMSITokenCredentials () {
     return `${KeyVault.MSITokenCredentials}`
   }
+  getKeyVaultExports () {return Object.keys (KeyVault)} 
   getCredentials () {return getKeyValutCredentials ()} 
   getKeyVault () {return getKeyVaultClient ()} 
   getSecret (name) {
