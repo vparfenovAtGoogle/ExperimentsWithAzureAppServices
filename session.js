@@ -14,6 +14,20 @@ function getKeyValutCredentials () {
   return msRestAzure.loginWithAppServiceMSI({resource: 'https://vault.azure.net'})
 }
 
+function getKeyVaultToken () {
+  function _formAuthorizationValue(err, tokenResponse) {
+    if (err) {
+      return callback(err);
+    }
+    // Calculate the value to be set in the request's Authorization header and resume the call.
+    var authorizationValue = tokenResponse.tokenType + ' ' + tokenResponse.accessToken;
+
+    return callback(null, authorizationValue);
+  }
+  return getKeyValutCredentials ()
+    .then (credentials => credentials.getToken (_formAuthorizationValue))
+}
+
 function getKeyVaultClient () {
   return getKeyValutCredentials ().then (credentials => new KeyVault.KeyVaultClient(credentials))
 }
@@ -152,6 +166,7 @@ class SessionDB {
   getKeyVaultModels () {return Object.keys (KeyVault.Models).map (name => `${name}: ${typeof KeyVault.Models [name]}`)} 
   getKeyVaultExports () {return Object.keys (KeyVault).map (name => `${name}: ${typeof KeyVault [name]}`)} 
   getCredentials () {return getKeyValutCredentials ()} 
+  getKeyVaultToken () {return getKeyVaultToken ()}
   getKeyVault () {return getKeyVaultClient ()} 
   getSecret (name) {
     return getKeyVaultSecret (name)
