@@ -169,7 +169,7 @@ class SessionDB {
   getKeyVaultModels () {return Object.keys (KeyVault.Models).map (name => `${name}: ${typeof KeyVault.Models [name]}`)} 
   getKeyVaultExports () {return Object.keys (KeyVault).map (name => `${name}: ${typeof KeyVault [name]}`)} 
   getCredentials () {
-    getKeyValutCredentials ()
+    return getKeyValutCredentials ()
       .then (credentials => {
         return {credentials, features: Object.keys (credentials).map (name => `${name}: ${typeof credentials [name]}`)}
       })
