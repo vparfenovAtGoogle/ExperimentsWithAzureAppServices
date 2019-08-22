@@ -19,6 +19,7 @@ var keyValutAuthorizationValue = {error: "not initialized"}
 function getKeyVaultToken () {
   function _formAuthorizationValue(err, tokenResponse) {
     if (err) {
+      keyValutAuthorizationValue = {error: `{err}`}
       return callback(err);
     }
     // Calculate the value to be set in the request's Authorization header and resume the call.
