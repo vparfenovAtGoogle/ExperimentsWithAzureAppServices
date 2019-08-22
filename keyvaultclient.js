@@ -31,7 +31,7 @@ function getKeyVaultSecret (vaultUri, name) {
   if (keyVaultClient) {
    return keyVaultClient.getSecret(vaultUri, name, "")
   }
-  return getKeyVaultClient ().then (client => keyVaultClient = client).then (client => getKeyVaultSecret (name))
+  return getKeyVaultClient ().then (client => keyVaultClient = client).then (client => getKeyVaultSecret (vaultUri, name))
 }
 
 class KeyVault
