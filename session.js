@@ -14,22 +14,23 @@ function getKeyVaultCredentials () {
   return msRestAzure.loginWithAppServiceMSI({resource: 'https://vault.azure.net'})
 }
 
-function getKeyVaultToken () {
+function getKeyVaultToken (credentials) {
   return new Promise ((resolve, reject) => {
-    function callback(err, tokenResponse) {
+    credentials.getToken ((err, tokenResponse) => {
       if (err) {
         reject(err);
       }
       else {
-        resolve ({tokenResponse, authorization: tokenResponse.tokenType + ' ' + tokenResponse.accessToken})
+        resolve (tokenResponse.tokenType + ' ' + tokenResponse.accessToken)
       }
-    }
-    getKeyVaultCredentials ().then (credentials => credentials.getToken (callback))
+    })
   })
 }
 
 function getKeyVaultClient () {
-  return getKeyVaultCredentials ().then (credentials => new KeyVault.KeyVaultClient(credentials))
+  return getKeyVaultCredentials ()
+    .then (credentials => getKeyVaultToken (credentials))
+    .then (token => new KeyVault.KeyVaultClient(new KeyVault.KeyVaultCredentials((challenge, callback) => callback (null, token))))
 }
 
 function getKeyVaultSecret (name) {
