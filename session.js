@@ -1,8 +1,9 @@
 const os = require ('os')
 const uuidv1 = require ('uuid/v1')
 
+const KeyVaultClient = require('./keyvaultclient');
+
 const KeyVault = require('azure-keyvault');
-//const KeyVault = require('@azure/keyvault-secrets');
 const msRestAzure = require('ms-rest-azure');
 
 const queryProcessor = require ('./queryprocessor')
@@ -33,11 +34,15 @@ function getKeyVaultClient () {
     .then (token => new KeyVault.KeyVaultClient(new KeyVault.KeyVaultCredentials((challenge, callback) => callback (null, token))))
 }
 
-function getKeyVaultSecret (name) {
+function getKeyVaultSecretOld (name) {
   if (keyVaultClient) {
    return keyVaultClient.getSecret(vaultUri, name, "")
   }
   return getKeyVaultClient ().then (client => keyVaultClient = client).then (client => getKeyVaultSecret (name))
+}
+
+function getKeyVaultSecret (name) {
+  return new KeyVaultClient (process.env.KEY_VAULT_NAME).getSecret (name)
 }
 
 function pushToArray (obj, arr) {arr.push (obj); return obj}
