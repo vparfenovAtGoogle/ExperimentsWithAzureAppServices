@@ -169,7 +169,6 @@ class SessionDB {
         return {credentials, features: Object.keys (credentials).map (name => `${name}: ${typeof credentials [name]}`)}
       })
   } 
-  getAccessToken () {return KeyVaultClient.getAccessToken ()}
   getKeyVault () {return getKeyVaultClient ()} 
   getSecret (name) {
     return new KeyVaultClient (process.env.KEY_VAULT_NAME).getSecret (name)
