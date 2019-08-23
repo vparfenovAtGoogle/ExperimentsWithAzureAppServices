@@ -45,7 +45,7 @@ class KeyVault
     this.uri = `https://${name}.vault.azure.net/`
   }
   static parseSecretId (id) {
-    return KeyVault.parseSecretIdentifier(id)
+    return AzureKeyVault.parseSecretIdentifier(id)
   }
   getSecret (name) {
     return getKeyVaultClient ().then (client=>client.getSecret(this.uri, name, ""))
