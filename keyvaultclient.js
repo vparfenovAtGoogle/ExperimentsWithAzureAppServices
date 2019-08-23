@@ -44,12 +44,11 @@ class KeyVault
   constructor (name) {
     this.uri = `https://${name}.vault.azure.net/`
   }
+  static parseSecretId (id) {
+    return KeyVault.parseSecretIdentifier(id)
+  }
   getSecret (name) {
-    const client = getKeyVaultClient ()
-    if (name.match (/https?:\/\//)) {
-      return client.then (client=>client.getSecret(name))
-    }
-    return client.then (client=>client.getSecret(this.uri, name, ""))
+    return getKeyVaultClient ().then (client=>client.getSecret(this.uri, name, ""))
   }
   setSecret (name, value, options) {
     return getKeyVaultClient ().then (client=>client.setSecret(this.uri, name, value, options))
