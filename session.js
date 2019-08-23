@@ -1,5 +1,6 @@
 const os = require ('os')
 const uuidv1 = require ('uuid/v1')
+const request = require ('request')
 
 const KeyVaultClient = require('./keyvaultclient');
 
@@ -179,6 +180,25 @@ class SessionDB {
   }
   getSecrets () {
     return new KeyVaultClient (process.env.KEY_VAULT_NAME).getSecrets ()
+  }
+  getInstanceMetadata () {
+    return new Promise ((resolve, reject) => {
+      request ({
+        url: 'http://169.254.169.254/metadata/instance?api-version=2019-03-11',
+        json: true,
+        headers: {Metadata: 'true'}
+      }, (err, res, data) => {
+        if (err) {
+          reject (err)
+        }
+        else if (res.statusCode !== 200) {
+          reject (new Error (`Getting instance metadata returned ${res.statusCode}`))
+        }
+        else {
+          resolve (data)
+        }
+      })
+    })
   }
   getOS () {
     return {
