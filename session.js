@@ -3,10 +3,10 @@ const uuidv1 = require ('uuid/v1')
 
 const KeyVaultClient = require('./keyvaultclient');
 
+const queryProcessor = require ('./queryprocessor')
+
 const KeyVault = require('azure-keyvault');
 const msRestAzure = require('ms-rest-azure');
-
-const queryProcessor = require ('./queryprocessor')
 
 let keyVaultClient = null
 const vaultUri = `https://${process.env.KEY_VAULT_NAME}.vault.azure.net/`
@@ -166,11 +166,6 @@ class SessionDB {
       }, delay);
     }).then (r=>r)
   }
-  getMSITokenCredentials () {
-    return `${KeyVault.MSITokenCredentials}`
-  }
-  getKeyVaultModels () {return Object.keys (KeyVault.Models).map (name => `${name}: ${typeof KeyVault.Models [name]}`)} 
-  getKeyVaultExports () {return Object.keys (KeyVault).map (name => `${name}: ${typeof KeyVault [name]}`)} 
   getCredentials () {return getKeyVaultCredentials ()} 
   getCredentialsInfo () {
     return getKeyVaultCredentials ()
@@ -178,7 +173,7 @@ class SessionDB {
         return {credentials, features: Object.keys (credentials).map (name => `${name}: ${typeof credentials [name]}`)}
       })
   } 
-  getKeyVaultToken () {return getKeyVaultToken ()}
+  getAccessToken () {return KeyVaultClient.getAccessToken ()}
   getKeyVault () {return getKeyVaultClient ()} 
   getSecret (name) {
     return getKeyVaultSecret (name)

@@ -2,7 +2,7 @@ const AzureKeyVault = require('azure-keyvault');
 const msRestAzure = require('ms-rest-azure');
 
 let keyVaultClient = null
-const vaultUri = `https://${process.env.KEY_VAULT_NAME}.vault.azure.net/`
+let tokenResponse = null
 
 function getKeyVaultCredentials () {
   return msRestAzure.loginWithAppServiceMSI({resource: 'https://vault.azure.net'})
@@ -10,28 +10,34 @@ function getKeyVaultCredentials () {
 
 function getKeyVaultToken (credentials) {
   return new Promise ((resolve, reject) => {
-    credentials.getToken ((err, tokenResponse) => {
+    credentials.getToken ((err, response) => {
       if (err) {
+        tokenResponse = null
         reject(err);
       }
       else {
+        tokenResponse = response
         resolve (tokenResponse.tokenType + ' ' + tokenResponse.accessToken)
       }
     })
   })
 }
 
-function getKeyVaultClient () {
+function refreshKeyVaultClient () {
   return getKeyVaultCredentials ()
     .then (credentials => getKeyVaultToken (credentials))
     .then (token => new AzureKeyVault.KeyVaultClient(new AzureKeyVault.KeyVaultCredentials((challenge, callback) => callback (null, token))))
 }
 
-function getKeyVaultSecret (vaultUri, name) {
+function getKeyVaultClient () {
   if (keyVaultClient) {
-   return keyVaultClient.getSecret(vaultUri, name, "")
+    return Promise.resolve (keyVaultClient)
   }
-  return getKeyVaultClient ().then (client => keyVaultClient = client).then (client => getKeyVaultSecret (vaultUri, name))
+  return refreshKeyVaultClient ().then (client => keyVaultClient = client)
+}
+
+function getKeyVaultSecret (vaultUri, name) {
+  return getKeyVaultClient ().then (client=>client.getSecret(vaultUri, name, ""))
 }
 
 class KeyVault
@@ -39,8 +45,18 @@ class KeyVault
   constructor (name) {
     this.uri = `https://${name}.vault.azure.net/`
   }
+  static getAccessToken () {
+    if (tokenResponse) {
+      return Promise.resolve (tokenResponse)
+    }
+    return refreshKeyVaultClient ().then (()=>tokenResponse)
+  }
   getSecret (name) {
     return getKeyVaultSecret (this.uri, name)
+  }
+  setSecret (name, value) {
+  }
+  listSecrets () {
   }
 }
 
