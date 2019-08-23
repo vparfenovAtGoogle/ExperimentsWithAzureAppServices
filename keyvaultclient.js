@@ -50,7 +50,7 @@ class KeyVault
   setSecret (name, value, options) {
     return getKeyVaultClient ().then (client=>client.setSecret(this.uri, name, value, options))
   }
-  listSecrets () {
+  getSecrets () {
     return getKeyVaultClient ().then (client=>client.getSecrets(this.uri))
   }
 }
