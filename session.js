@@ -41,10 +41,6 @@ function getKeyVaultSecretOld (name) {
   return getKeyVaultClient ().then (client => keyVaultClient = client).then (client => getKeyVaultSecret (name))
 }
 
-function getKeyVaultSecret (name) {
-  return new KeyVaultClient (process.env.KEY_VAULT_NAME).getSecret (name)
-}
-
 function pushToArray (obj, arr) {arr.push (obj); return obj}
 
 class Model {
@@ -176,7 +172,13 @@ class SessionDB {
   getAccessToken () {return KeyVaultClient.getAccessToken ()}
   getKeyVault () {return getKeyVaultClient ()} 
   getSecret (name) {
-    return getKeyVaultSecret (name)
+    return new KeyVaultClient (process.env.KEY_VAULT_NAME).getSecret (name)
+  }
+  setSecret (name, value) {
+    return new KeyVaultClient (process.env.KEY_VAULT_NAME).setSecret (name, value)
+  }
+  getSecrets () {
+    return new KeyVaultClient (process.env.KEY_VAULT_NAME).getSecrets ()
   }
   getOS () {
     return {
