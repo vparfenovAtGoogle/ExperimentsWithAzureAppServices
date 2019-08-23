@@ -2,7 +2,7 @@ const AzureKeyVault = require('azure-keyvault');
 const msRestAzure = require('ms-rest-azure');
 
 let keyVaultClient = null
-let tokenExpiration = 0
+let tokenExpiration = Date.now ()
 
 function getKeyVaultCredentials () {
   return msRestAzure.loginWithAppServiceMSI({resource: 'https://vault.azure.net'})
@@ -10,13 +10,13 @@ function getKeyVaultCredentials () {
 
 function getKeyVaultToken (credentials) {
   return new Promise ((resolve, reject) => {
-    credentials.getToken ((err, response) => {
+    credentials.getToken ((err, tokenResponse) => {
       if (err) {
-        tokenExpiration = 0
+        tokenExpiration = Date.now ()
         reject(err);
       }
       else {
-        tokenExpiration = new Date (response.expiresOn).getTime ()
+        tokenExpiration = new Date (tokenResponse.expiresOn).getTime ()
         resolve (tokenResponse.tokenType + ' ' + tokenResponse.accessToken)
       }
     })
