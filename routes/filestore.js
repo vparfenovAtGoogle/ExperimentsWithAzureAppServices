@@ -14,7 +14,9 @@ function createDir (dir, cb) {
         cb (err, dir)
       })
     }
-    cb(err, dir)
+    else {
+      cb(err, dir)
+    }
   })
 }
 
