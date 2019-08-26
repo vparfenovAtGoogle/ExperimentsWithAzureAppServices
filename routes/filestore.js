@@ -94,7 +94,10 @@ router.get('/list', function(req, res, next) {
       res.render('list',
       {
         title: `Content of ${dir}`,
-        files: files.map (f => {return {name: f}})
+        files: files.map (f => {
+          const stat = fs.statSync(path.join (dir, f))
+          return {name: f, ctime: new Date (stat.birthtime).toLocaleString (), mtime: new Date (stat.mtime).toLocaleString (), size: stat.size}
+        })
       })
     }
   })

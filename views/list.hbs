@@ -2,10 +2,10 @@
 <!-- p>User: {{user}}</p-->
 <h3>Files ({{files.length}})</h3>
 <table class="table table-hover table-condensed table-bordered table-sm">
-  <thead class="thead-dark"><th class="w-30">File Name</th><th class="w-60">TBD</th><th class="w-10"></th></thead>
+  <thead class="thead-dark"><th class="w-30">File Name</th><th class="w-20">Created</th><th class="w-20">Size</th><th class="w-20">Modified</th></thead>
   {{#each files}}
   <tr>
-    <td>{{name}}</td><td>...</td>
+    <td>{{name}}</td><td>{{ctime}}</td><td>{{size}}</td><td>{{mtime}}</td>
   </tr>
   {{/each}}
 </table>
