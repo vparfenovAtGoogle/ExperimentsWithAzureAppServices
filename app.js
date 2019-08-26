@@ -10,6 +10,8 @@ const fileRouter = require('./routes/filestore');
 const authRouter = require ('./routes/auth')
 //const colaborationRouter = require('./routes/collaboration');
 
+require ('./creojs/ptc-creo-js').bootstrap (`${__dirname}/public/creojsweb`)
+
 const app = express();
 
 // view engine setup
@@ -26,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/users', usersRouter);
+app.use('/files', fileRouter);
 app.use('/auth', authRouter);
 //app.use('/collaboration', colaborationRouter);
 

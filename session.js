@@ -3,44 +3,7 @@ const uuidv1 = require ('uuid/v1')
 const request = require ('request')
 
 const KeyVaultClient = require('./keyvaultclient');
-
 const queryProcessor = require ('./queryprocessor')
-
-const KeyVault = require('azure-keyvault');
-const msRestAzure = require('ms-rest-azure');
-
-let keyVaultClient = null
-const vaultUri = `https://${process.env.KEY_VAULT_NAME}.vault.azure.net/`
-
-function getKeyVaultCredentials () {
-  return msRestAzure.loginWithAppServiceMSI({resource: 'https://vault.azure.net'})
-}
-
-function getKeyVaultToken (credentials) {
-  return new Promise ((resolve, reject) => {
-    credentials.getToken ((err, tokenResponse) => {
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve (tokenResponse.tokenType + ' ' + tokenResponse.accessToken)
-      }
-    })
-  })
-}
-
-function getKeyVaultClient () {
-  return getKeyVaultCredentials ()
-    .then (credentials => getKeyVaultToken (credentials))
-    .then (token => new KeyVault.KeyVaultClient(new KeyVault.KeyVaultCredentials((challenge, callback) => callback (null, token))))
-}
-
-function getKeyVaultSecretOld (name) {
-  if (keyVaultClient) {
-   return keyVaultClient.getSecret(vaultUri, name, "")
-  }
-  return getKeyVaultClient ().then (client => keyVaultClient = client).then (client => getKeyVaultSecret (name))
-}
 
 function pushToArray (obj, arr) {arr.push (obj); return obj}
 
@@ -163,15 +126,15 @@ class SessionDB {
       }, delay);
     }).then (r=>r)
   }
-  getCredentials () {return getKeyVaultCredentials ()} 
+  getCredentials () {return KeyVaultClient.getCredentials ()} 
   getCredentialsInfo () {
-    return getKeyVaultCredentials ()
+    return KeyVaultClient.getCredentials () ()
       .then (credentials => {
         return {credentials, features: Object.keys (credentials).map (name => `${name}: ${typeof credentials [name]}`)}
       })
   } 
   parseSecretId (id) {return KeyVaultClient.parseSecretId (id)} 
-  getKeyVault () {return getKeyVaultClient ()} 
+  getKeyVault () {return KeyVaultClient.getClient ()} 
   getSecret (name) {
     return new KeyVaultClient (process.env.KEY_VAULT_NAME).getSecret (name)
   }

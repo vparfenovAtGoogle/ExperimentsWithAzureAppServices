@@ -1,10 +1,11 @@
-var express = require('express') // https://expressjs.com/en/4x/api.html#express
-var router = express.Router()
-var multer  = require('multer') // https://github.com/expressjs/multer
+const express = require('express') // https://expressjs.com/en/4x/api.html#express
+const router = express.Router()
+const multer  = require('multer') // https://github.com/expressjs/multer
+const fs = require('fs')
 
-var storage = multer.diskStorage({
+const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, '/tmp/my-uploads')
+    cb(null, 'uploads')
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now())
@@ -31,8 +32,9 @@ function fileFilter (req, file, cb) {
 //var upload = multer({ storage: storage })
 
 //var upload = multer({ storage: storage, fileFilter: fileFilter })
+var upload = multer({ storage })
 
-var upload = multer({ dest: 'uploads/' })
+//var upload = multer({ dest: 'uploads' })
 
 function logRequestAndSendResponse (req, res) {
   const query = req.query 
@@ -77,12 +79,24 @@ router.get('/', function(req, res, next) {
   if (req.body) console.log(`req.body=${JSON.stringify (req.body)}`)
   if (req.files) console.log(`req.files=${JSON.stringify (req.files)}`)
   if (req.headers) console.log(`req.headers=${JSON.stringify (req.headers)}`)
-  res.download('uploads/log.txt', 'log.txt', function (err) {
+  fs.readdir('uploads', (err, files) => {
     if (err) {
-      console.log(`error while download ${err}`)
-    } else {
-      // decrement a download credit, etc.
-      console.log(`successful download`)
+      res.json({query, error: err})
+    }
+    else if (files.length > 0) {
+      const file = files [0]
+      res.download(`uploads/${file}`, file, function (err) {
+        if (err) {
+          console.log(`error while download ${err}`)
+          res.json({query, error: err})
+        } else {
+          // decrement a download credit, etc.
+          console.log(`successful download`)
+        }
+      })
+    }
+    else {
+      res.json({query, error: 'files not found'})
     }
   })
   //res.send(JSON.stringify (result));

@@ -47,6 +47,12 @@ class KeyVault
   static parseSecretId (id) {
     return AzureKeyVault.parseSecretIdentifier(id)
   }
+  static getClient () {
+    return getKeyVaultClient ()
+  }
+  static getCredentials () {
+    return getCredentials ()
+  }
   getSecret (name) {
     return getKeyVaultClient ().then (client=>client.getSecret(this.uri, name, ""))
   }

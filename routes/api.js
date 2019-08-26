@@ -25,7 +25,7 @@ module.exports = function (applicationObj) {
       }
     }
     const query = req.query 
-    console.log(`query: ${JSON.stringify (query)}, path: ${req.pqth}, path: ${req.method}, url: ${req.url}`)
+    console.log(`query: ${JSON.stringify (query)}, path: ${req.path}, path: ${req.method}, url: ${req.url}`)
     if (Object.keys (query).length > 0) {
       try {
         let func = applicationObj [query.func]
@@ -37,7 +37,6 @@ module.exports = function (applicationObj) {
         }
         const args = query.args
         sendResult (args ? func (...JSON.parse (args)) : func ())
-//        result = {result: args ? func (...JSON.parse (args)) : func ()}
       }
       catch (ex) {
         sendException (ex)
