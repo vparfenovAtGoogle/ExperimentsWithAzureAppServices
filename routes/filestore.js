@@ -105,6 +105,7 @@ router.get('/list', function(req, res, next) {
 
 router.post('/memory', multer({ storage: multer.memoryStorage() }).any(), function(req, res, next) {
   if (req.files && req.files.length > 0) {
+    const appDir = req.query.appdir || uploadDir
     var dones = 0
     const nfiles = req.files.length
     function done (err) {
@@ -118,7 +119,7 @@ router.post('/memory', multer({ storage: multer.memoryStorage() }).any(), functi
     req.files.forEach (f => {
       if (f.buffer) {
         const buffer = f.buffer
-        createDir (uploadDir, (err, dir) => {
+        createDir (appDir, (err, dir) => {
           if (err) {
             f.error = err
             done (err)
