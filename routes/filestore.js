@@ -9,9 +9,12 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     fs.access (uploadDir, err => {
       if (err) {
+        console.log (`Creating upload directory: ${uploadDir}`)
         fs.mkdirSync (uploadDir, {recursive: true})
       }
-      cb(null, 'uploads')
+      console.log (`Returning upload directory: ${uploadDir}`)
+      console.log (`Stat: ${JSON.stringify (fs.statSync (uploadDir))}`)
+      cb(null, uploadDir)
     })
   },
   filename: function (req, file, cb) {
