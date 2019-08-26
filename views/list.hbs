@@ -1,0 +1,11 @@
+<h2>{{title}}</h2>
+<!-- p>User: {{user}}</p-->
+<h3>Files ({{files.length}})</h3>
+<table class="table table-hover table-condensed table-bordered table-sm">
+  <thead class="thead-dark"><th class="w-30">File Name</th><th class="w-60">TBD</th><th class="w-10"></th></thead>
+  {{#each files}}
+  <tr>
+    <td>{{name}}</td><td>...</td>
+  </tr>
+  {{/each}}
+</table>

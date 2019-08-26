@@ -75,6 +75,31 @@ router.post('/', upload.any(), function(req, res, next) {
   logRequestAndSendResponse (req, res)
 })
 
+router.use('/list', function(req, res, next) { 
+  res.setHeader('Last-Modified', (new Date()).toUTCString());
+  next(); 
+})
+
+router.get('/list', function(req, res, next) {
+  const dir = req.query.dir || uploadDir
+  fs.readdir(dir, (err, files) => {
+    if (err) {
+      res.render('list',
+      {
+        title: 'Directory is missing',
+        files: []
+      })
+    }
+    else {
+      res.render('list',
+      {
+        title: `Content of ${dir}`,
+        files: files.map (f => {return {name: f}})
+      })
+    }
+  })
+})
+
 router.post('/memory', multer({ storage: multer.memoryStorage() }).any(), function(req, res, next) {
   if (req.files && req.files.length > 0) {
     var dones = 0
