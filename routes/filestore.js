@@ -2,8 +2,21 @@ const express = require('express') // https://expressjs.com/en/4x/api.html#expre
 const router = express.Router()
 const multer  = require('multer') // https://github.com/expressjs/multer
 const fs = require('fs')
+const path = require('path')
 
 const uploadDir = 'uploads'
+
+function createDir (dir, cb) {
+  fs.access (dir, err => {
+    if (err) {
+      console.log (`Creating upload directory: ${dir}`)
+      fs.mkdir (dir, {recursive: true}, err => {
+        cb (err, dir)
+      })
+    }
+    cb(err, dir)
+  })
+}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -61,14 +74,43 @@ router.post('/', upload.any(), function(req, res, next) {
 })
 
 router.post('/memory', multer({ storage: multer.memoryStorage() }).any(), function(req, res, next) {
-  if (req.files) {
+  if (req.files && req.files.length > 0) {
+    var dones = 0
+    const nfiles = req.files.length
+    function done (err) {
+      if (err) {
+        res.json({query: req.query, files: req.files, headers: req.headers, error: err})
+      }
+      else if (++dones == nfiles) {
+        res.json({query: req.query, files: req.files, headers: req.headers})
+      }
+    }
     req.files.forEach (f => {
       if (f.buffer) {
+        const buffer = f.buffer
+        createDir (uploadDir, (err, dir) => {
+          if (err) {
+            f.error = err
+            done (err)
+          }
+          else {
+            const filepath = path.join (dir, `${f.fieldname}-${new Date ().getTime()}`)
+            fs.writeFile (filepath, buffer, err => {
+              if (err) {
+                f.error = err
+              }
+              else {
+                f.saved = true
+                f.savedName = filepath
+              }
+              done ()
+            })
+          }
+        })
         delete f.buffer
       }
     })
   }
-  res.json({query: req.query, files: req.files, headers: req.headers})
 })
 
 
