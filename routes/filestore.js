@@ -103,9 +103,17 @@ router.get('/list', function(req, res, next) {
   })
 })
 
+router.use('/memory', function(req, res, next) {
+  req.uploaddir = req.query.appdir
+  req.args = (typeof req.query.args === 'string') ? JSON.parse (req.query.args) : req.query.args
+  if (!req.uploaddir && req.args) req.uploaddir = req.args.appdir
+  if (!req.uploaddir) req.uploaddir = uploadDir
+  next(); 
+})
+
 router.post('/memory', multer({ storage: multer.memoryStorage() }).any(), function(req, res, next) {
   if (req.files && req.files.length > 0) {
-    const appDir = req.query.appdir || uploadDir
+    const appDir = req.uploaddir
     var dones = 0
     const nfiles = req.files.length
     function done (err) {
@@ -125,7 +133,7 @@ router.post('/memory', multer({ storage: multer.memoryStorage() }).any(), functi
             done (err)
           }
           else {
-            const filepath = path.join (dir, `${f.fieldname}-${new Date ().getTime()}`)
+            const filepath = path.join (dir, `${f.fieldname}`)
             fs.writeFile (filepath, buffer, err => {
               if (err) {
                 f.error = err
@@ -143,7 +151,6 @@ router.post('/memory', multer({ storage: multer.memoryStorage() }).any(), functi
     })
   }
 })
-
 
 router.post('/string', multer({ storage: multer.memoryStorage() }).any(), function(req, res, next) {
   if (req.files) {
