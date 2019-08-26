@@ -1,0 +1,47 @@
+{
+	const session = pfcSession.Current
+	const serverURL = 'http://localhost:3000'
+	//const serverURL = 'https://gdc-vparfenov-cloud-apps-nodejs-webapp.azurewebsites.net'
+	//const serverURL = 'https://vparfenov-tch-talk-web-app.azurewebsites.net'
+	function askQuestion (question) {
+		return session.showDialog (
+			{label: question, type: pfcMessageDialogType.MESSAGE_QUESTION, focus: pfcMessageButton.MESSAGE_BUTTON_NO,
+			 buttons: [pfcMessageButton.MESSAGE_BUTTON_YES, pfcMessageButton.MESSAGE_BUTTON_NO]}
+		) === pfcMessageButton.MESSAGE_BUTTON_YES
+	}
+	function uploadFileAs ({fileName, fieldName, appdir='public/app/images'}) {
+		fieldName = fieldName || fileName
+		print (`uploading ${fileName} as ${fieldName}`)
+    rest.uploadFile ({filePath: fileName, fieldName, args: {appdir}}, '/files/memory')
+      .then (res => print (`Upload response: ${JSON.stringify (res, null, 2)}`))
+      .catch (res => print (`Upload error: ${JSON.stringify (res, null, 2)}`))
+	}
+	function dumpWindowImage (id) {
+		const window = session.CurrentWindow
+		const model = window.GetModel()
+		if (model) {
+			const imageName = `${model.FileName}.jpg`
+			window.Refit()
+			session.GetCurrentSelectionBuffer ().Clear()
+			session.ExportCurrentRasterImage (imageName, pfcJPEGImageExportInstructions.Create (1.0, 1.0))
+			print ('image saved')
+			uploadFileAs ({fileName: imageName, fieldName: `${id}-${imageName}`})
+		}
+	}
+	CreoJS.clearListeners()
+	const solidListener = {
+		OnAfterFeatureCreate: (solid, feature) => dumpWindowImage (`${feature.Id}-add`),
+		OnAfterFeatureDelete: (solid, id) => dumpWindowImage (`${feature.Id}-del`)
+	}
+	CreoJS.addListener (session, pfcSolidActionListener.create (solidListener))
+	const modelListener = {
+		OnAfterModelSave : modelDescr => {
+			const fileName = modelDescr.GetFileName()
+			if (askQuestion (`Model ${fileName} was saved, Would you like submitting it for evaluation?\nThis cannot be undone`)) {
+				const uploadFileName = session.GetModelFromDescr(modelDescr).backup (session.GetCurrentDirectory())
+				uploadFileAs ({fileName: `${uploadFileName}`, fieldName: fileName, appdir: 'uploads/models'})
+			}
+		}
+	}
+	CreoJS.addListener (session, pfcModelActionListener.create (modelListener))
+}

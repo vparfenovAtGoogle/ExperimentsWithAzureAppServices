@@ -44,4 +44,5 @@ const Browser = (function () {
         })
 }) ()
 
+function getOrigin () {return window.location.origin}
 function alert (msg) {Browser.alert (msg)}

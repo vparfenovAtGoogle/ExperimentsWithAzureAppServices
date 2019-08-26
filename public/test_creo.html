@@ -2,12 +2,39 @@
 <head>
   <script src="creojsweb/creojs.js"></script>
   <script type="text/creojs" src="creojsweb/browser.creojs"></script>
+  <script type="text/creojs" src="creojsweb/extend_pfc.js"></script>
+  <script type="text/creojs" src="creojsweb/rest_client.js"></script>
   <script type="text/creojs" src="creojsweb/weblink.legacy.creojs"></script>
-  <script id="initialization" type="text/creojs">
-  Browser.alert ('Hello, Creo!')
+  <script type="text/creojs" src="creojs/app.creojs"></script>
+  <script id="rest_init.creojs" type="text/creojs">
+    let rest = null
+    Browser.alert ('initialize')
+    Browser.getOrigin ().then (url => {
+      rest = new RestClient (url)
+      Browser.alert (`rest: ${rest}`)
+    })
+    function testRest () {
+      rest.call (rest.query.createClientSession ('vparfenov'), '/api')
+      .then (res => Browser.alert (`REST success ${JSON.stringify (res)}`))
+      .catch (res => Browser.alert (`REST failure ${JSON.stringify (res)}`))
+    }
+    function clearListeners () { CreoJS.clearListeners() }
+  </script>
+  <script>
+    function testRest () { CreoJS.testRest () }
+    if (true) CreoJS.$ADD_ON_UNLOAD (function () {CreoJS.clearListeners ()})
+    if (true) CreoJS.$ONPRINT = function (text) {
+      var output = document.getElementById ('output')
+      var line = document.createElement ('div')
+      line.innerText = text
+      output.appendChild (line)
+    }
+    function getOrigin () {return window.location.origin}
   </script>
 </head>
 <body>
-Testing Creo.JS!
+  <h4>Testing Creo.JS!</h4>
+  <button onclick="testRest()">Test REST</button>
+  <div id=output></div>
 </body>
 </html>

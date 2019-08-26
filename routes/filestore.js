@@ -9,7 +9,6 @@ const uploadDir = 'uploads'
 function createDir (dir, cb) {
   fs.access (dir, err => {
     if (err) {
-      console.log (`Creating upload directory: ${dir}`)
       fs.mkdir (dir, {recursive: true}, err => {
         cb (err, dir)
       })
@@ -22,19 +21,10 @@ function createDir (dir, cb) {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    console.log (`Storage destination: ${JSON.stringify (req)}`)
-    fs.access (uploadDir, err => {
-      if (err) {
-        console.log (`Creating upload directory: ${uploadDir}`)
-        fs.mkdirSync (uploadDir, {recursive: true})
-      }
-      console.log (`Returning upload directory: ${uploadDir}`)
-      console.log (`Stat: ${JSON.stringify (fs.statSync (uploadDir))}`)
-      cb(null, uploadDir)
-    })
+    createDir (uploadDir, (err, dir) => cb (err, dir))
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now())
+    cb(null, file.fieldname)
   }
 })
 
@@ -53,9 +43,6 @@ function fileFilter (req, file, cb) {
   cb(new Error('I don\'t have a clue!'))
 
 }
-
-//var storage = multer.memoryStorage()
-//var upload = multer({ storage: storage })
 
 //var upload = multer({ storage: storage, fileFilter: fileFilter })
 var upload = multer({ storage })
