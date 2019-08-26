@@ -3,9 +3,16 @@ const router = express.Router()
 const multer  = require('multer') // https://github.com/expressjs/multer
 const fs = require('fs')
 
+const uploadDir = 'uploads'
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads')
+    fs.access (uploadDir, err => {
+      if (err) {
+        fs.mkdirSync (uploadDir, {recursive: true})
+      }
+      cb(null, 'uploads')
+    })
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now())
