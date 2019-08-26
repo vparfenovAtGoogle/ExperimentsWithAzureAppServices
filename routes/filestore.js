@@ -7,6 +7,7 @@ const uploadDir = 'uploads'
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    console.log (`Storage destination: ${JSON.stringify (req)}`)
     fs.access (uploadDir, err => {
       if (err) {
         console.log (`Creating upload directory: ${uploadDir}`)
@@ -58,6 +59,18 @@ function logRequestAndSendResponse (req, res) {
 router.post('/', upload.any(), function(req, res, next) {
   logRequestAndSendResponse (req, res)
 })
+
+router.post('/memory', multer({ storage: multer.memoryStorage() }).any(), function(req, res, next) {
+  if (req.files) {
+    req.files.forEach (f => {
+      if (f.buffer) {
+        delete f.buffer
+      }
+    })
+  }
+  res.json({query: req.query, files: req.files, headers: req.headers})
+})
+
 
 router.post('/string', multer({ storage: multer.memoryStorage() }).any(), function(req, res, next) {
   if (req.files) {
